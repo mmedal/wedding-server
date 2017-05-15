@@ -1,0 +1,38 @@
+{
+  "name": "wedding-server",
+  "version": "0.0.1",
+  "description": "RSVP API for my wedding-www.",
+  "license": "MIT",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": "7.9.0"
+  },
+  "author": "Matthew Medal",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmedal/wedding-server.git"
+  },
+  "scripts": {
+    "pretranspile": "rm -rf build && mkdir build",
+    "transpile": "babel src --out-dir build --source-maps",
+    "prestart": "yarn run transpile",
+    "develop": "nodemon --ext js --ignore build/ --trace-warnings",
+    "lint": "semistandard --fix",
+    "test": "babel-node --trace-warnings test/index.js | tap-spec",
+    "start": "node --trace-warnings index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "nock": "^9.0.13",
+    "nodemon": "^1.11.0",
+    "semistandard": "^11.0.0",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.3"
+  }
+}
