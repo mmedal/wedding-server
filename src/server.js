@@ -1,12 +1,14 @@
-const bodyParser = require('body-parser');
-const express = require('express');
+import 'source-map-support/register';
 
-const routes = require('./routes.js');
+import bodyParser from 'body-parser';
+import express from 'express';
+
+import router from './routes'
 
 // configure app
 const app = express();
 app.use(bodyParser.json());
-app.use(routes);
+app.use(router);
 app.use(express.static('static'));
 app.set('port', (process.env.PORT || 3000));
 app.set('trust proxy', true);

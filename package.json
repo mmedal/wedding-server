@@ -16,8 +16,8 @@
   "scripts": {
     "pretranspile": "rm -rf build && mkdir build",
     "transpile": "babel src --out-dir build --source-maps",
-    "prestart": "yarn run transpile",
-    "develop": "nodemon --ext js --ignore build/ --trace-warnings",
+    "prestart": "yarn transpile",
+    "develop": "nodemon --ext js --ignore build/ --exec 'yarn start'",
     "lint": "semistandard --fix",
     "test": "babel-node --trace-warnings test/index.js | tap-spec",
     "start": "node --trace-warnings index.js"
@@ -27,7 +27,8 @@
     "babel-preset-env": "^1.4.0",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "pg": "^6.2.2"
+    "pg": "^6.2.2",
+    "source-map-support": "^0.4.15"
   },
   "devDependencies": {
     "nock": "^9.0.13",

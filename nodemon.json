@@ -1,6 +1,0 @@
-{
-  "events": {
-    "restart": "yarn run transpile",
-    "start": "yarn run transpile"
-  }
-}
