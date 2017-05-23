@@ -26,6 +26,7 @@
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
     "express": "^4.15.2",
     "pg": "^6.2.2",
     "source-map-support": "^0.4.15"

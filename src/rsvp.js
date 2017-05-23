@@ -18,7 +18,8 @@ const initRsvp = (rsvpRequest, rsvpDetails) => {
   console.log(rsvpDetails);
   // Return the invited guests to the frontend if reservation is found
   if (rsvpRequest.attending) {
-    return createAlert('success', 'A matching reservation has been found.', {invitedGuests: rsvpDetails.invitedguests});
+    return createAlert('info', 'Now, simply select the guests you would like to RSVP for.',
+      {invitedGuests: rsvpDetails.invitedguests});
   } else {
     // Guest is not attending
     return Promise.resolve()
@@ -39,9 +40,9 @@ const completeRsvp = (rsvpRequest, rsvpDetails) => {
 
   // Mark guests as attending
   return Promise.resolve()
-    .then(() => pool.query('update guests set attendingguests = $1::text[] where $2 = any (invitedGuests);',
+    .then(() => pool.query('update guests set attendingguests = $1::text[], hasrsvped = TRUE where $2 = any (invitedGuests);',
       [rsvpRequest.attendingGuests.map(normalizeName), normalizeName(rsvpRequest.name)]))
-    .then((r) => createAlert('success', 'You have successfully RSVPed. Thank you!'))
+    .then((r) => createAlert('success', 'You have successfully RSVPed. See you on the 8th!'))
     .catch((err) => createAlert('danger', err));
 };
 
@@ -50,8 +51,8 @@ const rsvper = (rsvpRequest) => {
     .then(() => lookupRsvpByName(rsvpRequest.name))
     .then((rsvpDetails) => {
       if (!rsvpDetails) return createAlert('danger', 'No matching reservation was found.');
-      if (rsvpDetails.hasrsvped) return createAlert('info',
-        'You have already RSVPed! Please give us a call if you need to make changes to your RSVP.');
+      if (rsvpDetails.hasrsvped) return createAlert('warning',
+        'You have already RSVPed! Please give us a call if you need to make any changes to your reservation.');
       if (rsvpRequest.hasOwnProperty('attendingGuests')) {
         return completeRsvp(rsvpRequest, rsvpDetails);
       } else {

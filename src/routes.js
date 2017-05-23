@@ -13,7 +13,6 @@ router.post('/rsvp', (req, res) => {
       if (rsvpResponse.status === 'success' || rsvpResponse.status === 'info') {
         res.send(rsvpResponse);
       } else {
-        console.log(rsvpResponse);
         res.status(400).send(rsvpResponse);
       }
     });
