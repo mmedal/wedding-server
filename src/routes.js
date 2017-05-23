@@ -4,6 +4,10 @@ import { rsvper, validateRsvpRequest } from './rsvp';
 
 const router = Router();
 
+router.get('/', (req, res) => {
+  return res.sendStatus(200);
+});
+
 router.use('/rsvp', validateRsvpRequest);
 
 router.post('/rsvp', (req, res) => {
@@ -16,10 +20,6 @@ router.post('/rsvp', (req, res) => {
         res.status(400).send(rsvpResponse);
       }
     });
-});
-
-router.get('/ping', (req, res) => {
-  return res.sendStatus(200);
 });
 
 export default router;
