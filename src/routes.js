@@ -1,13 +1,21 @@
 import { Router } from 'express';
 
-import pool from './db';
+import { rsvper, validateRsvpRequest } from './rsvp';
 
 const router = Router();
 
-router.get('/hello', (req, res) => {
+// router.use('.rsvp', validateRsvpRequest);
+
+router.get('/rsvp', (req, res) => {
   return Promise.resolve()
-    .then(() => pool.query('select * from guests where \'Matthew Medal\' = any (invitedGuests)'))
-    .then((r) => res.send(r));
+    .then(() => rsvper(req.body))
+    .then((rsvpResponse) => {
+      if (rsvpResponse.status === 'success') {
+        res.send(rsvpResponse);
+      } else {
+        res.status(400).send(rsvpResponse);
+      }
+    });
 });
 
 export default router;
