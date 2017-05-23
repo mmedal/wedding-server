@@ -10,39 +10,48 @@ const lookupRsvpByName = (fullName) => {
       } else {
         return r.rows[0];
       }
-    });
+    })
+    .catch((err) => createAlert('danger', err));
 };
 
 const initRsvp = (rsvpRequest, rsvpDetails) => {
-  // Return the invited guests to the frontend
+  console.log(rsvpDetails);
+  // Return the invited guests to the frontend if reservation is found
   if (rsvpRequest.attending) {
-    return createAlert('success', 'A matching reservation has been found.',
-      { invitedGuests: rsvpDetails.invitedguests });
+    return createAlert('success', 'A matching reservation has been found.', {invitedGuests: rsvpDetails.invitedguests});
   } else {
-    // TODO mark as not attending
-    return createAlert('success', 'You have successfully RSVPed. Thank you!');
+    // Guest is not attending
+    return Promise.resolve()
+      .then(() => pool.query('update guests set hasrsvped = TRUE where $1 = any (invitedGuests);',
+        [normalizeName(rsvpRequest.name)]))
+      .then((r) => createAlert('success', 'You have successfully RSVPed. Thank you!'))
+      .catch((err) => createAlert('danger', err));
   }
-  return rsvpDetails;
-  return createAlert('success', 'A matching reservation has been found.',
-    { invitedGuests: rsvpDetails.invitedguests });
 };
 
 const completeRsvp = (rsvpRequest, rsvpDetails) => {
+  // Check that guests have been submitted and that all submitted guests are in the guest list
+  if (rsvpRequest.attendingGuests.length < 1) return createAlert('danger', 'You must select some guests to RSVP.');
+  const guestsAreValid = rsvpRequest.attendingGuests.reduce((valid, guest) => {
+    return valid && rsvpDetails.invitedguests.includes(normalizeName(guest));
+  }, true);
+  if (!guestsAreValid) return createAlert('danger', 'Invalid guest selection.');
+
+  // Mark guests as attending
   return Promise.resolve()
-    .then(() => lookupRsvpByName('matthew meDal'))
-    .then((rsvpDetails) => {
-      if (!rsvpDetails) return createAlert('danger', 'No matching reservation was found.');
-      // do the actual rsvping now based on attending
-      return rsvpDetails;
-    });
+    .then(() => pool.query('update guests set attendingguests = $1::text[] where $2 = any (invitedGuests);',
+      [rsvpRequest.attendingGuests.map(normalizeName), normalizeName(rsvpRequest.name)]))
+    .then((r) => createAlert('success', 'You have successfully RSVPed. Thank you!'))
+    .catch((err) => createAlert('danger', err));
 };
 
 const rsvper = (rsvpRequest) => {
   return Promise.resolve()
-    .then(() => lookupRsvpByName('matthew medal'))
+    .then(() => lookupRsvpByName(rsvpRequest.name))
     .then((rsvpDetails) => {
       if (!rsvpDetails) return createAlert('danger', 'No matching reservation was found.');
-      if (rsvpDetails.hasrsvped) return createAlert('info', 'You have already RSVPed! Please give us a call if you need to make changes to your RSVP.')
+      if (rsvpDetails.hasrsvped) return createAlert('info',
+        'You have already RSVPed! Please give us a call if you need to make changes to your RSVP.');
       if (rsvpRequest.hasOwnProperty('attendingGuests')) {
         return completeRsvp(rsvpRequest, rsvpDetails);
       } else {
@@ -55,9 +64,7 @@ const validateRsvpRequest = (req, res, next) => {
   if (req.body.hasOwnProperty('name') && req.body.hasOwnProperty('attending')) {
     next();
   } else {
-    res.status(400).send({
-      'msg': 'Request does not include the minimum required fields.'
-    });
+    res.status(400).send(createAlert('danger', 'The reservation request must include all fields.'));
   }
 };
 
