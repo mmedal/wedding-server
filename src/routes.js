@@ -18,4 +18,8 @@ router.post('/rsvp', (req, res) => {
     });
 });
 
+router.get('/ping', (req, res) => {
+  return res.sendStatus(200);
+});
+
 export default router;
