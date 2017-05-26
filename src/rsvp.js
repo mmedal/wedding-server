@@ -52,7 +52,7 @@ const rsvper = (rsvpRequest) => {
     .then((rsvpDetails) => {
       if (!rsvpDetails) return createAlert('danger', 'No matching reservation was found.');
       if (rsvpDetails.hasrsvped) return createAlert('warning',
-        'You have already RSVPed! Please give us a call if you need to make any changes to your reservation.');
+        'You have already RSVPed! Please give us a call if you need to make any changes to your response.');
       if (rsvpRequest.hasOwnProperty('attendingGuests')) {
         return completeRsvp(rsvpRequest, rsvpDetails);
       } else {

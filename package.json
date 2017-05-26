@@ -32,6 +32,9 @@
     "source-map-support": "^0.4.15"
   },
   "devDependencies": {
+    "csv-generate": "^1.0.0",
+    "csv-parse": "^1.2.0",
+    "csv-stringify": "^1.0.4",
     "nock": "^9.0.13",
     "nodemon": "^1.11.0",
     "proxyquire": "^1.8.0",
